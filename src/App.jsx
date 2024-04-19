@@ -63,10 +63,12 @@ const App = () => {
 };
 
 const Search = (props) => {
-    <div>
+    return(
+      <div>
         <label htmlFor="search">Search: </label>
         <input id="search" type="text" onChange={props.onSearch} />
-    </div>
-};
+      </div>
+    );
+  };
     
 export default App;
