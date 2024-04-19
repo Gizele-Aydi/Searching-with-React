@@ -1,11 +1,11 @@
 import * as React from "react"
 
-const Search = () => {
-    console.log("Search renders")
+const Search = (props) => {
     const [searchTerm, setSearchTerm] = React.useState('');
 
     const handleChange = (event) => {
         setSearchTerm(event.target.value);
+        props.onSearch(event);
     };
     
     return (
@@ -14,7 +14,7 @@ const Search = () => {
             <input id="search" type="text" onChange={handleChange} />
 
             <p>
-                Searching for <strong>{searchTerm}</strong>.
+                Searching for <strong>{searchTerm}</strong>
             </p>
         </div>
     );
@@ -44,7 +44,6 @@ const Item = (props) => {
 )};
 
 const App = () => {
-    console.log("App renders")
     const stories = [
         {
           title: "React ",
@@ -62,11 +61,15 @@ const App = () => {
           points: 5,
           objectID: 1,
         },
-      ];
+    ];
+    const handleSearch = (event) => {
+        console.log(event.target.value);
+    }
+    
     return (
         <div>
             <h1>My hacker stories</h1>
-            <Search />
+            <Search onSearch={handleSearch} />
             <hr />
             <List list={stories} />
         </div>
