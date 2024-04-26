@@ -1,27 +1,23 @@
 import * as React from "react"
 
-const List = (props) => {
-    console.log("List renders")
-    return (
+const List = ({list}) => (
     <ul>
-        {props.list.map((item)=> (
+        {list.map((item)=> (
             <Item key={item.objectID} item={item} />
         ))}
     </ul>
-)};
+);
 
-const Item = (props) => {
-    console.log("Item renders")
-    return (
-        <li>
-            <span>
-                <a href="{props.item.url}">{props.item.title}</a>
-            </span>
-            <span>{props.item.author}</span>
-            <span>{props.item.num_comments}</span>
-            <span>{props.item.points}</span>
-        </li>
-)};
+const Item = ({item}) => (
+    <li>
+        <span>
+            <a href="{props.item.url}">{props.item.title}</a>
+        </span>
+        <span>{props.item.author}</span>
+        <span>{props.item.num_comments}</span>
+        <span>{props.item.points}</span>
+    </li>
+);
 
 const App = () => {
     const stories = [
@@ -62,7 +58,7 @@ const App = () => {
     );
 };
 
-const Search = (props) => (
+const Search = ({search, onSearch}) => (
     <div>
         <label htmlFor="search">Search: </label>
         <input 
@@ -72,6 +68,6 @@ const Search = (props) => (
         onChange={props.onSearch} 
         />
     </div>
-  );
-    
+);
+
 export default App;
