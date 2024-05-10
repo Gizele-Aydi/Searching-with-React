@@ -53,8 +53,17 @@ const initialStories = [
     },
 ];
 
-const App = () =>{
-    const[stories, setStories] = React.useState([]);
+const App = () => {
+
+    const [searchTerm, setSearchTerm]= React.useState(localStorage.getItem('search')||'React')
+
+    const [url, setUrl] = React.useState(`${API_ENDPOINT}${searchTerm}`); 
+ 
+    const handleSearchSubmit = () => { 
+      setUrl(`${API_ENDPOINT}${searchTerm}`); 
+    };
+
+    const[stories, setStories] = React.useState(initialStories);
     
     const [isLoading, setIsLoading] = React.useState(false);
     
@@ -67,25 +76,22 @@ const App = () =>{
       setStories(newStories);
     };
     
-    const [searchTerm, setSearchTerm]= React.useState(localStorage.getItem('search')||'React')
-    
-    React.useEffect(() => {
-      if (!searchTerm) return;
-      setIsLoading(true);
-      fetch('${API_ENDPOINT}${searchTerm}')
-        .then((response) => response.json())
-        .then((result) => {
-            setIsLoading(false);
-            setStories(result.hits);
-        })
-        .catch(() => {
-            setIsLoading(false);
-            setIsError(true);
-        });
-    }, [searchTerm]);
+    React.useEffect(() => { 
+        setIsLoading(true); 
+        fetch(url) 
+            .then((response) => response.json()) 
+            .then((result) => { 
+                setStories(result.hits); 
+                setIsLoading(false); 
+            }) 
+            .catch(() => { 
+                setIsError(true); 
+                setIsLoading(false); 
+            }); 
+    }, [url]);
   
-    React.useEffect(()=>{
-      localStorage.setItem('search',searchTerm);},[searchTerm]);
+    React.useEffect(()=> {
+        localStorage.setItem('search', searchTerm);},[searchTerm]);
     
     const handleSearch = (event) =>{
       setSearchTerm(event.target.value);
@@ -103,6 +109,14 @@ const App = () =>{
           <strong> Search: </strong>
         </InputWithLabel>
         
+        <button 
+        type="button" 
+        disabled={!searchTerm} 
+        onClick={handleSearchSubmit} 
+        > 
+            Submit 
+        </button>
+        
         <hr />
         
         {isError && <p>Something went wrong ...</p>}
@@ -113,7 +127,7 @@ const App = () =>{
           )}
       </div>
     );
-  };
+};
 
 const InputWithLabel = ({
     id,
