@@ -53,57 +53,67 @@ const initialStories = [
     },
 ];
 
-const App = () => {
-
-    const [searchTerm, setSearchTerm] = React.useState(
-        localStorage.getItem('search') || 'React'
-    );
+const App = () =>{
+    const[stories, setStories] = React.useState([]);
     
-    const [stories, setStories] = React.useState(initialStories);
-
+    const [isLoading, setIsLoading] = React.useState(false);
+    
+    const [isError, setIsError] = React.useState(false);
+  
     const handleRemoveStory = (item) => {
-        const newStories = stories.filter(
-            (story) => item.objectID !== story.objectID
-        );
-        setStories(newStories);
+      const newStories = stories.filter(
+        (story) => item.objectID !== story.objectID
+      );
+      setStories(newStories);
     };
+    
+    const [searchTerm, setSearchTerm]= React.useState(localStorage.getItem('search')||'React')
     
     React.useEffect(() => {
-        if (!searchTerm) return;
-        fetch('${API_ENDPOINT}${searchTerm}')
-            .then((response) => response.json())
-
-            .then((result) => {
-                setStories(result.hits);
-            })
-
-            .catch(() => { 
-            }); 
+      if (!searchTerm) return;
+      setIsLoading(true);
+      fetch('${API_ENDPOINT}${searchTerm}')
+        .then((response) => response.json())
+        .then((result) => {
+            setIsLoading(false);
+            setStories(result.hits);
+        })
+        .catch(() => {
+            setIsLoading(false);
+            setIsError(true);
+        });
     }, [searchTerm]);
-
-    const handleSearch = (event) => {
-        setSearchTerm(event.target.value);
+  
+    React.useEffect(()=>{
+      localStorage.setItem('search',searchTerm);},[searchTerm]);
+    
+    const handleSearch = (event) =>{
+      setSearchTerm(event.target.value);
     };
-
-    const searchedStories = stories.filter((story) =>
-        story.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
     
     return (
-        <div>
-            <h1>My hacker stories</h1>
-            <InputWithLabel
-                id="search"
-                value={searchTerm}
-                onInputChange={handleSearch}
-            >
-            <strong>Search: </strong>
-            </InputWithLabel>
-            <hr />
-            <List list={stories} onRemoveItem={handleRemoveStory} />
-        </div>
+      <div>
+        <h1>My hacker stories</h1>
+        
+        <InputWithLabel
+          id="search"
+          value={searchTerm}
+          onInputChange={handleSearch}
+          >
+          <strong> Search: </strong>
+        </InputWithLabel>
+        
+        <hr />
+        
+        {isError && <p>Something went wrong ...</p>}
+        {isLoading ? (
+          <p>Loading ...</p>
+          ) : (
+          <List list={stories} onRemoveItem={handleRemoveStory} />
+          )}
+      </div>
     );
-};
+  };
 
 const InputWithLabel = ({
     id,
