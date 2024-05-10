@@ -1,5 +1,7 @@
 import * as React from "react"
 
+const API_ENDPOINT = "https://hn.algolia.com/api/v1/search?query=";
+
 const List = ({ list, onRemoveItem }) => (
     <ul>
         {list.map((item)=> (
@@ -67,9 +69,18 @@ const App = () => {
     };
     
     React.useEffect(() => {
-        localStorage.setItem('search', searchTerm);
+        if (!searchTerm) return;
+        fetch('${API_ENDPOINT}${searchTerm}')
+            .then((response) => response.json())
+
+            .then((result) => {
+                setStories(result.hits);
+            })
+
+            .catch(() => { 
+            }); 
     }, [searchTerm]);
-    
+
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
@@ -89,7 +100,7 @@ const App = () => {
             <strong>Search: </strong>
             </InputWithLabel>
             <hr />
-            <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+            <List list={stories} onRemoveItem={handleRemoveStory} />
         </div>
     );
 };
